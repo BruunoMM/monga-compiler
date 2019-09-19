@@ -1,6 +1,7 @@
 %token TK_CHAR TK_INT TK_FLOAT TK_BOOL
 %token TK_RETURN TK_IF TK_ELSE TK_AS TK_NEW TK_WHILE TK_TRUE TK_FALSE
-%token TK_PLUS TK_MINUS TK_MULTIPLY TK_DIVISION TK_ATTRIBUITION
+%token TK_PLUS TK_MINUS 
+%token TK_MULTIPLY TK_DIVISION TK_ATTRIBUITION
 %token TK_EQUALS TK_NOTEQUALS TK_GEQUALS TK_LEQUALS TK_GREATER TK_LESSER
 %token TK_NOT TK_AND TK_OR
 %token TK_ID TK_STRING TK_LITERAL TK_INTVALUE TK_FLOATVALUE TK_LITERALVALUE
@@ -19,7 +20,7 @@
 %type exp exp_or exp_and exp_comparacao exp_equals exp_somasub exp_multdiv
              exp_generica exp_prefixada exp_posfixada generico numero string lista_exp exp_opcional
              exp_new
-
+                
 %%
 programa: definicao;
 
@@ -56,7 +57,8 @@ parametro: TK_ID ':' tipo ;
 
 bloco: '{' def_vars comandos '}' ;
 
-var: TK_ID | exp '[' exp_somasub ']';
+var: TK_ID 
+   | exp_generica '[' exp_somasub ']';
 
 comandos: comando comandos
         | %empty ;
@@ -95,9 +97,9 @@ exp_somasub: exp_somasub TK_MINUS exp_multdiv
            | exp_somasub TK_PLUS exp_multdiv
            | exp_multdiv ;
 
-exp_multdiv: exp_multdiv TK_MULTIPLY exp_prefixada
-           | exp_multdiv TK_DIVISION exp_posfixada
-           | exp_prefixada ;
+exp_multdiv: exp_posfixada TK_MULTIPLY exp_prefixada
+           | exp_posfixada TK_DIVISION exp_prefixada
+           | exp_posfixada ;
 
 exp_prefixada: TK_NOT exp_prefixada
              | TK_MINUS exp_prefixada
@@ -107,30 +109,29 @@ exp_posfixada: exp_generica
              | exp_generica TK_AS tipo
              | exp_new ;
 
+exp_new: TK_NEW tipo '[' exp_somasub ']' ;
+
 exp_generica: generico
             | chamada ;
-
-generico: numero
-        | var
-        | string
-        | '(' exp ')' ;
 
 numero: TK_INTVALUE
       | TK_FLOATVALUE
       | TK_LITERALVALUE ;
 
 string: TK_STRING ;
-        
 
-exp_new: TK_NEW tipo '[' exp_somasub ']' ;
+generico: numero
+        | var
+        | string
+        | '(' exp ')' 
+        | TK_TRUE
+        | TK_FALSE
+        | TK_LITERAL ;
 
-chamada: TK_ID '(' lista_exp ')';
+chamada: TK_ID '(' lista_exp ')' ;
 
-lista_exp: exp_or exp_opcional
-         | %empty ;
+lista_exp: exp_or exp_opcional ;
 
 exp_opcional: %empty
-            | ',' exp_or exp_opcional ;
-
+            | ',' lista_exp ;
 %%
-
