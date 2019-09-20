@@ -120,12 +120,14 @@ numero: TK_INTVALUE
 
 string: TK_STRING ;
 
+boolean: TK_TRUE
+       | TK_FALSE ;
+
 generico: numero
         | var
         | string
         | '(' exp ')' 
-        | TK_TRUE
-        | TK_FALSE
+        | boolean
         | TK_LITERAL ;
 
 chamada: TK_ID '(' lista_exp ')' ;
