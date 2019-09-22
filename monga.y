@@ -6,9 +6,14 @@
 %token TK_NOT TK_AND TK_OR
 %token TK_ID TK_STRING TK_LITERAL TK_INTVALUE TK_FLOATVALUE TK_LITERALVALUE
 
+%define parse.error verbose
+
 %{
 #include <stdio.h>
-#include "lex.yy.c"
+
+void yyerror(char *s);
+int yylex(void);
+
 %}
 
 %type chamada
@@ -39,12 +44,12 @@ tipo_primario: TK_CHAR
              | TK_FLOAT
              | TK_BOOL ;
 
-def_funcao: TK_ID '(' parametros ')' ':' tipo_retorno bloco ;
+def_funcao: TK_ID '(' parametros ')' tipo_retorno bloco ;
 
 def_funcoes: def_funcao def_funcoes
            | %empty ;
 
-tipo_retorno: tipo
+tipo_retorno: ':' tipo
             | %empty ;
 
 parametros: parametro parametrosAlt
@@ -132,8 +137,21 @@ generico: numero
 
 chamada: TK_ID '(' lista_exp ')' ;
 
-lista_exp: exp_or exp_opcional ;
+lista_exp: exp_or exp_opcional
+         | %empty ;
 
 exp_opcional: %empty
             | ',' lista_exp ;
 %%
+
+void yyerror(char *s) {
+    fprintf(stderr, "%s\n", s);
+}
+
+int yywrap(void) {
+    return 1;
+}
+
+int main() { 
+    return yyparse();
+}
