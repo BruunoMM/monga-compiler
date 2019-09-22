@@ -11,8 +11,9 @@
 %{
 #include <stdio.h>
 
-void yyerror(char *s);
-int yylex(void);
+void yyerror(const char *s);
+int yywrap(void);
+int yylex();
 
 %}
 
@@ -144,7 +145,7 @@ exp_opcional: %empty
             | ',' lista_exp ;
 %%
 
-void yyerror(char *s) {
+void yyerror(const char *s) {
     fprintf(stderr, "%s\n", s);
 }
 
