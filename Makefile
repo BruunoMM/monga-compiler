@@ -9,7 +9,7 @@ build_lex:
 
 build_bison:
 	@bison -d monga.y
-	@gcc -Wall -o parser monga.tab.c lex.yy.c
+	@gcc -Wall -o parser monga.tab.c lex.yy.c tree.c
 
 build:
 	@make build_lex
